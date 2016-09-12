@@ -5,6 +5,10 @@
   "main": "index.js",
   "watch": {
     "test": {
+      "patterns": [
+        ".",
+        "test"
+      ],
       "extensions": "js",
       "quiet": true
     }
@@ -20,6 +24,7 @@
   "keywords": [
     "promise",
     "promises",
+    "promised",
     "until",
     "transform",
     "functional",
@@ -32,11 +37,13 @@
   },
   "homepage": "https://github.com/philbot9/promised-until#readme",
   "dependencies": {
+    "any-promise": "^1.3.0",
     "is-promise": "^2.1.0"
   },
   "devDependencies": {
     "blue-tape": "^1.0.0",
     "faucet": "0.0.1",
-    "npm-watch": "^0.1.6"
+    "npm-watch": "^0.1.6",
+    "sinon": "^1.17.5"
   }
 }
