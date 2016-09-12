@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start": "npm-watch",
-    "test": "tape test/**.js | faucet"
+    "test": " node_modules/blue-tape/bin/blue-tape.js test/**.js | faucet"
   },
   "repository": {
     "type": "git",

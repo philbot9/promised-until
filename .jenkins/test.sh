@@ -1,2 +1,2 @@
-#!/bin/sh
-npm test
+#!/bin/bash
+cd /usr/src/app && npm test
