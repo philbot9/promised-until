@@ -1,0 +1,42 @@
+{
+  "name": "promised-until",
+  "version": "1.0.0",
+  "description": "Transforms a (promised) value until it satisfies the given predicate.",
+  "main": "index.js",
+  "watch": {
+    "test": {
+      "extensions": "js",
+      "quiet": true
+    }
+  },
+  "scripts": {
+    "start": "npm-watch",
+    "test": "tape test/**.js | faucet || true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/philbot9/promised-until.git"
+  },
+  "keywords": [
+    "promise",
+    "promises",
+    "until",
+    "transform",
+    "functional",
+    "loop"
+  ],
+  "author": "Philip Klostermann <philip.klostermann@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/philbot9/promised-until/issues"
+  },
+  "homepage": "https://github.com/philbot9/promised-until#readme",
+  "dependencies": {
+    "is-promise": "^2.1.0"
+  },
+  "devDependencies": {
+    "blue-tape": "^1.0.0",
+    "faucet": "0.0.1",
+    "npm-watch": "^0.1.6"
+  }
+}
