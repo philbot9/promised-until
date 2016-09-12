@@ -15,7 +15,7 @@ test('module exports a function', function (t) {
 })
 
 test('throws an error on invalid first argument', function (t) {
-  const errRegex = /predicate function/i
+  var errRegex = /predicate function/i
   t.plan(4)
   t.throws(function () { until() }, errRegex)
   t.throws(function () { until(null, noop) }, errRegex)
@@ -25,7 +25,7 @@ test('throws an error on invalid first argument', function (t) {
 })
 
 test('throws an error on invalid second argument', function (t) {
-  const errRegex = /transforming function/i
+  var errRegex = /transforming function/i
   t.plan(4)
   t.throws(function () { until(noop) }, errRegex)
   t.throws(function () { until(noop, null) }, errRegex)
