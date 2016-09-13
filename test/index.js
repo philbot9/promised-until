@@ -46,6 +46,41 @@ test('returned function returns a promise', function (t) {
   t.end()
 })
 
+test('resolves immediately if predicate satisfies the first time', function (t) {
+  var predicate = sinon.spy(function (c) { return true })
+  var transform = sinon.spy(function (c) { return c + 1 })
+
+  return until(predicate, transform)(0)
+    .then(function (c) {
+      t.equal(c, 0, 'resulting value is unchanged')
+      t.equal(predicate.callCount, 1, 'predicate called once')
+      t.equal(predicate.getCall(0).args[0], 0, 'predicate called with correct argument')
+      t.equal(transform.callCount, 0, 'transform is never called')
+    })
+})
+
+test('resolves after one transformation', function (t) {
+  var predicate = sinon.spy(function (c) { return c > 0 })
+  var transform = sinon.spy(function (c) { return c + 1 })
+
+  return until(predicate, transform)(0)
+    .then(function (c) {
+      t.equal(c, 1, 'resulting value is correct')
+      t.equal(predicate.callCount, 2, 'predicate called twice')
+      t.equal(predicate.getCall(0).args[0], 0, 'predicate called with correct argument')
+      t.equal(predicate.getCall(1).args[0], 1, 'predicate called with correct argument')
+
+      t.equal(transform.callCount, 1, 'transform called once')
+      t.equal(transform.getCall(0).args[0], 0, 'transform called with correct argument')
+    })
+})
+
+test('resolves after multiple transformations', function (t) {
+  var predicate = sinon.spy(function (c) { return c > 1 })
+  var transform = sinon.spy(function (c) { return c + 1 })
+  return runBasicTest(t, predicate, transform, 0)
+})
+
 test('works with promised input values', function (t) {
   var predicate = sinon.spy(function (c) {
     return c > 1
@@ -56,7 +91,7 @@ test('works with promised input values', function (t) {
     })
   })
   var input = new Promise(function (resolve) { resolve(0) }, 1)
-  return runSimilarTest(t, predicate, transform, input)
+  return runBasicTest(t, predicate, transform, input)
 })
 
 test('works with non-promised input values', function (t) {
@@ -68,7 +103,7 @@ test('works with non-promised input values', function (t) {
       setTimeout(function () { resolve(c + 1) }, 1)
     })
   })
-  return runSimilarTest(t, predicate, transform)
+  return runBasicTest(t, predicate, transform)
 })
 
 test('works with promised predicates', function (t) {
@@ -78,13 +113,13 @@ test('works with promised predicates', function (t) {
     })
   })
   var transform = sinon.spy(function (c) { return c + 1 })
-  return runSimilarTest(t, predicate, transform)
+  return runBasicTest(t, predicate, transform)
 })
 
 test('works with non-promised predicates', function (t) {
   var predicate = sinon.spy(function (c) { return c > 1 })
   var transform = sinon.spy(function (c) { return c + 1 })
-  return runSimilarTest(t, predicate, transform)
+  return runBasicTest(t, predicate, transform)
 })
 
 test('works with promised transforms', function (t) {
@@ -94,16 +129,74 @@ test('works with promised transforms', function (t) {
       setTimeout(function () { resolve(c + 1) }, 1)
     })
   })
-  return runSimilarTest(t, predicate, transform)
+  return runBasicTest(t, predicate, transform)
 })
 
 test('works with non-promised transforms', function (t) {
   var predicate = sinon.spy(function (c) { return c > 1 })
   var transform = sinon.spy(function (c) { return c + 1 })
-  return runSimilarTest(t, predicate, transform)
+  return runBasicTest(t, predicate, transform)
 })
 
-function runSimilarTest (t, predicate, transform, input) {
+test('promise rejects if value is rejected', function (t) {
+  var predicate = sinon.spy(function (c) { return c > 1 })
+  var transform = sinon.spy(function (c) { return c + 1})
+  var errorMsg = 'promise rejected'
+  var value = Promise.reject(errorMsg)
+
+  return until(predicate, transform)(value)
+    .then(function () { t.fail('promise should not resolve') })
+    .catch(function (err) {
+      t.ok(err, 'promise rejects with an error')
+      t.equal(err, errorMsg, 'error message is correct')
+      t.equal(predicate.callCount, 0, 'predicate is never called')
+      t.equal(transform.callCount, 0, 'transform is never called')
+    })
+})
+
+test('promise rejects if predicate is rejected', function (t) {
+  var errorMsg = 'promise rejected'
+  var predicate = sinon.spy(function (c) {
+    if (c < 1) {
+      return Promise.resolve(false)
+    } else {
+      return Promise.reject(errorMsg)
+    }
+  })
+  var transform = sinon.spy(function (c) { return c + 1})
+
+  return until(predicate, transform)(0)
+    .then(function () { t.fail('promise should not resolve') })
+    .catch(function (err) {
+      t.ok(err, 'promise rejects with an error')
+      t.equal(err, errorMsg, 'error message is correct')
+      t.equal(predicate.callCount, 2, 'predicate is called the correct number of times')
+      t.equal(transform.callCount, 1, 'transform is called the correct number of times')
+    })
+})
+
+test('promise rejects if transform is rejected', function (t) {
+  var errorMsg = 'promise rejected'
+  var predicate = sinon.spy(function (c) { return c > 1})
+  var transform = sinon.spy(function (c) {
+    if (c < 1) {
+      return Promise.resolve(c + 1)
+    } else {
+      return Promise.reject(errorMsg)
+    }
+  })
+
+  return until(predicate, transform)(0)
+    .then(function () { t.fail('promise should not resolve') })
+    .catch(function (err) {
+      t.ok(err, 'promise rejects with an error')
+      t.equal(err, errorMsg, 'error message is correct')
+      t.equal(predicate.callCount, 2, 'predicate is called the correct number of times')
+      t.equal(transform.callCount, 2, 'transform is called the correct number of times')
+    })
+})
+
+function runBasicTest (t, predicate, transform, input) {
   return until(predicate, transform)(input || 0)
     .then(function (result) {
       t.equal(result, 2, 'result is correct')

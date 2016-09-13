@@ -7,10 +7,10 @@ Transforms a (promised) value until it satisfies the given predicate. Full suppo
 
 ### `until(predicate, transform)(value) -> Promise(newValue)`
 
-Calling `until(predicate, transform)` returns a function that takes one parameter. Calling that function with `value` returns a promise, which resolves if `predicate(value)` is truth-y. While `predicate(value)` is false-y, the `value` is transformed with `transform(value)` until `predicate(value)` returns a truth-y value.
+Calling `until(predicate, transform)` returns a function that takes one parameter. Calling that function with `value` returns a promise, which resolves if `predicate(value)` is truthy. While `predicate(value)` is falsey, the `value` is transformed with `transform(value)` until `predicate(value)` returns a truthy value.
 
 ##### `predicate(x) -> true|false or Promise(true|false)`
-A function that accepts one parameter `x` and returns a **truth-y** or **false-y** value, or **Promise** of such a value.
+A function that accepts one parameter `x` and returns a **truthy** or **falsey** value, or **Promise** of such a value.
 
 ##### `transform(x) -> y or Promise(y)`
 A function that accepts one parameter `x` and transforms it into a new **value** `y`, or **Promise** of such a value.
