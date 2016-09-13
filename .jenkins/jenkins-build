@@ -1,0 +1,18 @@
+## Add the file contents as a Jenkins build script
+
+#!/bin/bash
+DOCKERFILES=( ./.jenkins/Dockerfiles/Dockerfile.* )
+
+echo "Found Dockerfile(s): ${DOCKERFILES[*]}"
+
+for f in "${DOCKERFILES[@]}"; do
+  BUILD_NUMBER="${f##*.}"
+  TAG="$BUILD_NUMBER-$GIT_COMMIT"
+  echo "Building docker image $JOB_BASE_NAME:$TAG from $f"
+
+  docker build --pull=true -f "$f" -t "$JOB_BASE_NAME:$TAG" .
+  if [ $? -ne 0 ] ; then exit 1 ; fi
+
+  docker run -i --rm "$JOB_BASE_NAME":"$TAG" ./.jenkins/test.sh
+  if [ $? -ne 0 ] ; then exit 1 ; fi
+done || exit 1

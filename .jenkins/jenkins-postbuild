@@ -1,0 +1,20 @@
+## Add the file contents as a Jenkins post build script
+
+#!/bin/bash
+
+# clean up docker containers and images
+# || true will let the script continue, even if the command fails
+
+DOCKERFILES=( ./.jenkins/Dockerfiles/Dockerfile.* )
+
+echo "Found Dockerfile(s): ${DOCKERFILES[*]}"
+
+for f in "${DOCKERFILES[@]}"; do
+  BUILD_NUMBER="${f##*.}"
+  TAG="$BUILD_NUMBER-$GIT_COMMIT"
+  echo "Deleting docker container and image $JOB_BASE_NAME:$TAG from $f"
+
+  docker kill "$JOB_BASE_NAME:$TAG" || true
+  docker rm "$JOB_BASE_NAME:$TAG" || true
+  docker rmi "$JOB_BASE_NAME:$TAG" || true
+done
