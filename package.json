@@ -1,6 +1,6 @@
 {
   "name": "promised-until",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Transforms a (promised) value until it satisfies the given predicate.",
   "main": "index.js",
   "watch": {
