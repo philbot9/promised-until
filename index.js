@@ -12,28 +12,23 @@ module.exports = function (predicate, transform) {
     throw new Error('Second argument must be a transforming function. Instead got ' + transform)
   }
 
-  return function doUntil (value) {
+  return function transformUntil (value) {
     return resolveValue(value)
       .then(function (resolvedValue) {
         return applyPredicate(resolvedValue)
           .then(function (predicateResult) {
             return Boolean(predicateResult)
               ? Promise.resolve(resolvedValue)
-              : doUntil(transform(resolvedValue))
+              : transformUntil(transform(resolvedValue))
           })
       })
   }
 
   function resolveValue (val) {
-    return isPromise(val)
-      ? val
-      : Promise.resolve(val)
+    return isPromise(val) ? val : Promise.resolve(val)
   }
 
   function applyPredicate (val) {
-    var predicateResult = predicate(val)
-    return isPromise(predicateResult)
-      ? predicateResult
-      : Promise.resolve(predicateResult)
+    return resolveValue(predicate(val))
   }
 }
