@@ -37,8 +37,7 @@
   },
   "homepage": "https://github.com/philbot9/promised-until#readme",
   "dependencies": {
-    "any-promise": "^1.3.0",
-    "is-promise": "^2.1.0"
+    "any-promise": "^1.3.0"
   },
   "devDependencies": {
     "blue-tape": "^1.0.0",

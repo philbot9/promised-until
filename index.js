@@ -1,7 +1,6 @@
 'use strict'
 
 var Promise = require('any-promise')
-var isPromise = require('is-promise')
 
 module.exports = function (predicate, transform) {
   if (!predicate || typeof predicate !== 'function') {
@@ -13,22 +12,18 @@ module.exports = function (predicate, transform) {
   }
 
   return function transformUntil (value) {
-    return resolveValue(value)
+    return Promise.resolve(value)
       .then(function (resolvedValue) {
         return applyPredicate(resolvedValue)
           .then(function (predicateResult) {
             return Boolean(predicateResult)
-              ? Promise.resolve(resolvedValue)
+              ? resolvedValue
               : transformUntil(transform(resolvedValue))
           })
       })
   }
 
-  function resolveValue (val) {
-    return isPromise(val) ? val : Promise.resolve(val)
-  }
-
   function applyPredicate (val) {
-    return resolveValue(predicate(val))
+    return Promise.resolve(predicate(val))
   }
 }
