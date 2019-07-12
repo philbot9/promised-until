@@ -43,7 +43,7 @@
     "blue-tape": "^1.0.0",
     "faucet": "0.0.1",
     "is-promise": "^2.1.0",
-    "npm-watch": "^0.1.6",
+    "npm-watch": "^0.6.0",
     "sinon": "^1.17.5"
   }
 }
